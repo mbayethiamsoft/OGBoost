@@ -5,7 +5,7 @@ import axios from "axios"
 
 export default function Home() {
   const [text, setText] = useState("")
-  const [result, setResult] = useState({ post: "", image: null  })
+  const [result, setResult] = useState({ post: "", image: ""  })
 
   const generate = async () => {
     const res = await axios.post("http://localhost:8000/generate", {
