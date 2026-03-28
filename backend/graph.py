@@ -1,13 +1,21 @@
 from langgraph.graph import StateGraph
-from langchain_openai import ChatOpenAI
+#from langchain_openai import ChatOpenAI
+from langchain_community.chat_models import ChatOllama
 from typing import TypedDict
 from dotenv import load_dotenv
 
 load_dotenv()
 
-llm = ChatOpenAI(
-    model="gpt-4o-mini",
-    temperature=0
+# llm = ChatOpenAI(
+#     model="gpt-4o-mini",
+#     temperature=0
+# )
+
+llm = ChatOllama(
+    model="llama3",
+    base_url="http://localhost:11434",
+    temperature=0,
+    # num_predict=100
 )
 
 class State(TypedDict):
@@ -23,6 +31,7 @@ def summarize(state):
     if not text:
         raise ValueError(f"Input manquant dans state: {state}")
 
+    print(f"Texte à résumer: {text}")
     res = llm.invoke(f"Résume:\n{text}")
     return {"summary": res.content}
 
@@ -32,7 +41,8 @@ def hooks(state):
     if not summary:
         raise ValueError(f"Summary manquante dans state: {state}")
 
-    res = llm.invoke(f"3 hooks viraux:\n{summary}")
+    print(f"hooks: {summary}")
+    res = llm.invoke(f"1 hook viral:\n{summary}")
     return {"hooks": res.content}
 
 def post(state):
@@ -41,7 +51,8 @@ def post(state):
     if not hooks:
         raise ValueError(f"Hooks manquants dans state: {state}")
 
-    res = llm.invoke(f"Post LinkedIn:\n{hooks}")
+    print(f"post: {hooks}")
+    res = llm.invoke(f"Post LinkedIn en français:\n{hooks}")
     return {"post": res.content}
 
 def og(state):
@@ -50,8 +61,9 @@ def og(state):
     if not post:
         raise ValueError(f"Post manquant dans state: {state}")
 
-    res = llm.invoke(f"Prompt image OG:\n{post}")
-    return {"image_prompt": res.content}
+    print(f"og: {post}")
+    res = llm.invoke(f"Image OG:\n{post}")
+    return {"image": res.content}
 
 builder = StateGraph(State)
 builder.add_node("summarize", summarize)
